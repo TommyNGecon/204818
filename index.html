@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>游戏大厅 - 动物进化 2048</title>
+    <meta name="theme-color" content="#2d5a27">
+    <link rel="stylesheet" href="lobby.css">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+    <div class="rotate-overlay" aria-hidden="true">
+        <div class="rotate-overlay-content">请将手机转为竖屏以继续</div>
+    </div>
+    <main class="lobby-frame" aria-label="游戏大厅">
+        <img class="lobby-bg" src="bg.png" alt="游戏大厅背景">
+        <a class="start-hitbox" href="game.html" aria-label="开始游戏"></a>
+    </main>
+    <script>
+        (function () {
+            document.addEventListener('pointerdown', () => {
+                const o = screen.orientation;
+                if (o && typeof o.lock === 'function') {
+                    o.lock('portrait').catch(() => {});
+                }
+            }, { once: true });
+
+            const frame = document.querySelector('.lobby-frame');
+            const img = document.querySelector('.lobby-bg');
+            const hitbox = document.querySelector('.start-hitbox');
+
+            if (!frame || !img || !hitbox) return;
+
+            const hotspot = {
+                cx: 0.5,
+                cy: 0.215,
+                rW: 0.275
+            };
+
+            const getImageSpacePoint = (clientX, clientY) => {
+                const frameRect = frame.getBoundingClientRect();
+                const x = clientX - frameRect.left;
+                const y = clientY - frameRect.top;
+
+                const naturalW = img.naturalWidth || 1;
+                const naturalH = img.naturalHeight || 1;
+
+                const scale = Math.max(frameRect.width / naturalW, frameRect.height / naturalH);
+                const drawnW = naturalW * scale;
+                const drawnH = naturalH * scale;
+                const offsetX = (frameRect.width - drawnW) / 2;
+                const offsetY = (frameRect.height - drawnH) / 2;
+
+                const imgX = (x - offsetX) / scale;
+                const imgY = (y - offsetY) / scale;
+
+                return { imgX, imgY, naturalW, naturalH };
+            };
+
+            const isInStartButton = (clientX, clientY) => {
+                const { imgX, imgY, naturalW, naturalH } = getImageSpacePoint(clientX, clientY);
+                if (imgX < 0 || imgY < 0 || imgX > naturalW || imgY > naturalH) return false;
+
+                const cx = hotspot.cx * naturalW;
+                const cy = hotspot.cy * naturalH;
+                const r = hotspot.rW * naturalW;
+                const dx = imgX - cx;
+                const dy = imgY - cy;
+                return (dx * dx + dy * dy) <= (r * r);
+            };
+
+            hitbox.addEventListener('click', (e) => {
+                const ok = isInStartButton(e.clientX, e.clientY);
+                if (!ok) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return;
+                }
+                location.href = 'game.html';
+            });
+
+            frame.addEventListener('pointermove', (e) => {
+                frame.style.cursor = isInStartButton(e.clientX, e.clientY) ? 'pointer' : 'default';
+            });
+        })();
+    </script>
+</body>
+</html>

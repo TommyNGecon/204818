@@ -1,0 +1,9 @@
+{
+  "name": "动物进化 2048",
+  "short_name": "2048",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#2d5a27",
+  "orientation": "portrait"
+}

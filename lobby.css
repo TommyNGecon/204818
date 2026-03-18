@@ -1,0 +1,131 @@
+* { box-sizing: border-box; }
+
+html, body { height: 100%; }
+
+body {
+    margin: 0;
+    background: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.rotate-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    text-align: center;
+}
+
+.rotate-overlay-content {
+    max-width: 420px;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.92);
+    border-radius: 22px;
+    padding: 18px 16px;
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: #2d5a27;
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.18);
+}
+
+@media (orientation: landscape) {
+    .rotate-overlay {
+        display: flex;
+    }
+}
+
+.lobby-frame {
+    position: relative;
+    width: min(100vw, calc(100vh * 0.5625));
+    height: min(100vh, calc(100vw / 0.5625));
+    aspect-ratio: 9 / 16;
+    overflow: hidden;
+}
+
+.lobby-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    user-select: none;
+    -webkit-user-drag: none;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.lobby-frame::before,
+.lobby-frame::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: url('bg.png') center / cover no-repeat;
+    pointer-events: none;
+    will-change: transform;
+    z-index: 2;
+}
+
+.lobby-frame::before {
+    opacity: 0.10;
+    transform-origin: 65% 18%;
+    animation: lobby-wind-top 6.5s ease-in-out infinite alternate;
+    -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 48%, rgba(0,0,0,0) 74%);
+    mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 48%, rgba(0,0,0,0) 74%);
+}
+
+.lobby-frame::after {
+    opacity: 0.08;
+    transform-origin: 40% 90%;
+    animation: lobby-wind-bottom 7.8s ease-in-out infinite alternate;
+    -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 52%, rgba(0,0,0,0) 80%);
+    mask-image: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 52%, rgba(0,0,0,0) 80%);
+}
+
+.start-hitbox {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    cursor: pointer;
+    display: block;
+    pointer-events: auto;
+    touch-action: manipulation;
+    text-decoration: none;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+    z-index: 3;
+}
+
+.start-hitbox:focus-visible {
+    outline: 4px solid rgba(255, 255, 255, 0.9);
+    outline-offset: 6px;
+    border-radius: 999px;
+}
+
+@keyframes lobby-wind-top {
+    0% { transform: translate3d(-0.35%, 0, 0) rotate(-0.18deg) skewX(-0.14deg); }
+    50% { transform: translate3d(0.30%, -0.18%, 0) rotate(0.22deg) skewX(0.12deg); }
+    100% { transform: translate3d(-0.18%, 0.14%, 0) rotate(-0.12deg) skewX(-0.08deg); }
+}
+
+@keyframes lobby-wind-bottom {
+    0% { transform: translate3d(0.30%, 0.22%, 0) rotate(0.12deg) skewX(0.11deg); }
+    50% { transform: translate3d(-0.22%, -0.14%, 0) rotate(-0.16deg) skewX(-0.10deg); }
+    100% { transform: translate3d(0.14%, 0.18%, 0) rotate(0.10deg) skewX(0.06deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .lobby-frame::before,
+    .lobby-frame::after {
+        animation: none;
+        transform: none;
+    }
+}
